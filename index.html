@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AZAM ELITE MANAGER 2026</title>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Montserrat:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --green: #00ff85; --dark: #0a0b0c; --glass: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.1); --blue: #3498db; --orange: #e67e22; --red: #e74c3c;
+            --gold: #f1c40f;
+        }
+
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: 'Montserrat', sans-serif; background: var(--dark); color: white; overflow: hidden; height: 100vh; }
+        
+        /* BACKGROUND */
+        .video-overlay { position: fixed; inset: 0; background: url('https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=1920&auto=format&fit=crop') center/cover; filter: brightness(0.2); z-index: -1; }
+
+        /* BUTTONS MODERN NEON */
+        .btn-primary, .btn-play {
+            background: linear-gradient(135deg, var(--green) 0%, #00d16d 100%);
+            color: #000; border: none; padding: 12px 25px; font-weight: 800;
+            border-radius: 10px; cursor: pointer; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-transform: uppercase; box-shadow: 0 4px 15px rgba(0, 255, 133, 0.3);
+        }
+        .btn-primary:hover, .btn-play:hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 8px 20px rgba(0, 255, 133, 0.5); }
+        .btn-primary:active { transform: scale(0.95); }
+
+        /* LAYOUT */
+        .screen { display: none; height: 100vh; animation: fadeIn 0.5s; }
+        .screen.active { display: block; }
+
+        /* SETUP */
+        .auth-box { max-width: 400px; margin: 80px auto; background: var(--glass); padding: 40px; border-radius: 20px; border: 1px solid var(--border); backdrop-filter: blur(10px); text-align: center; }
+        .logo { font-family: 'Oswald'; font-size: 3rem; font-weight: 700; margin-bottom: 20px; }
+        input, select { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px; border: 1px solid var(--border); background: rgba(0,0,0,0.5); color: white; }
+
+        /* DASHBOARD */
+        .top-nav { height: 70px; display: flex; justify-content: space-between; align-items: center; padding: 0 40px; background: rgba(0,0,0,0.8); border-bottom: 1px solid var(--border); }
+        .layout { display: grid; grid-template-columns: 250px 1fr; height: calc(100vh - 70px); }
+        .sidebar { background: #000; padding: 25px; border-right: 1px solid var(--border); }
+        .nav-btn { display: block; width: 100%; background: none; border: none; color: #777; text-align: left; padding: 12px 0; font-weight: 700; cursor: pointer; transition: 0.3s; }
+        .nav-btn.active, .nav-btn:hover { color: var(--green); transform: translateX(5px); }
+        .main-content { padding: 30px; overflow-y: auto; }
+
+        /* PROFILE UI */
+        .profile-trigger { display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 5px 15px; border-radius: 50px; background: var(--glass); }
+        .profile-trigger img { width: 35px; height: 35px; border-radius: 50%; border: 1px solid var(--green); }
+
+        /* GRID CARDS */
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; }
+        .card { background: var(--glass); padding: 15px; border-radius: 12px; border: 1px solid var(--border); text-align: center; }
+        
+        /* TABLE */
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px; border-bottom: 1px solid var(--border); text-align: left; }
+        .my-team-row { color: var(--green); background: rgba(0, 255, 133, 0.05); font-weight: bold; }
+
+        /* CELEBRATION */
+        #celebration-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 9999; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+        .trophy { width: 150px; animation: bounce 1s infinite alternate; filter: drop-shadow(0 0 20px gold); }
+        @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-20px); } }
+
+        /* MODAL */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 100; align-items: center; justify-content: center; }
+        .modal-content { background: #111; padding: 30px; border-radius: 20px; border: 1px solid var(--green); width: 400px; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body onclick="playMusic()">
+
+    <div class="video-overlay"></div>
+    <audio id="bgMusic" loop src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3"></audio>
+
+    <section id="setup-screen" class="screen active">
+        <div class="auth-box">
+            <div class="logo">AZAM<span class="green">ELITE</span></div>
+            <input type="text" id="mName" placeholder="COACH NAME">
+            <input type="number" id="mAge" placeholder="AGE (37-55)">
+            <select id="mLeague">
+                <option value="EPL">PREMIER LEAGUE</option>
+                <option value="LALIGA">LA LIGA</option>
+                <option value="BUNDESLIGA">BUNDESLIGA</option>
+                <option value="SERIEA">SERIE A</option>
+            </select>
+            <button class="btn-primary" style="width:100%" onclick="loadTeams()">START CAREER</button>
+        </div>
+    </section>
+
+    <section id="team-screen" class="screen">
+        <h2 style="text-align:center; margin-top:50px;">CHOOSE YOUR <span class="green">CLUB</span></h2>
+        <div id="team-grid" class="grid-container" style="padding:40px;"></div>
+    </section>
+
+    <section id="main-screen" class="screen">
+        <header class="top-nav">
+            <div id="header-team" class="header-team">TEAM NAME</div>
+            <div class="profile-trigger" onclick="openProfile()">
+                <div style="text-align:right">
+                    <span id="nav-mName" style="display:block; font-weight:800; font-size:0.8rem;">NAME</span>
+                    <small style="color:var(--green); font-size:0.6rem;">MANAGER</small>
+                </div>
+                <img id="nav-mPhoto" src="https://cdn-icons-png.flaticon.com/512/6009/6009864.png">
+            </div>
+        </header>
+
+        <div class="layout">
+            <aside class="sidebar">
+                <nav>
+                    <button onclick="showTab('office')" class="nav-btn active">OFFICE</button>
+                    <button onclick="showTab('squad')" class="nav-btn">SQUAD (23)</button>
+                    <button onclick="showTab('academy')" class="nav-btn">ACADEMY</button>
+                    <button onclick="showTab('market')" class="nav-btn">MARKET</button>
+                    <button onclick="showTab('league')" class="nav-btn">LEAGUE</button>
+                </nav>
+                <div style="margin-top:auto; padding-top:20px; border-top:1px solid var(--border)">
+                    <small>BUDGET</small>
+                    <div id="budget-val" class="green" style="font-size:1.5rem; font-weight:800;">$150M</div>
+                </div>
+            </aside>
+
+            <main class="main-content">
+                <div id="office-tab" class="tab-content active">
+                    <h1 style="font-size:3rem">SEASON <span id="welcome-year" class="green">2026</span></h1>
+                    <p>Welcome back, Coach! Let's make history.</p>
+                </div>
+                <div id="squad-tab" class="tab-content" style="display:none">
+                    <h2>TEAM SQUAD</h2>
+                    <div id="squad-grid" class="grid-container"></div>
+                </div>
+                <div id="academy-tab" class="tab-content" style="display:none">
+                    <h2>YOUTH ACADEMY</h2>
+                    <div id="academy-grid" class="grid-container"></div>
+                </div>
+                <div id="market-tab" class="tab-content" style="display:none">
+                    <h2>TRANSFER MARKET</h2>
+                    <div id="market-grid" class="grid-container"></div>
+                </div>
+                <div id="league-tab" class="tab-content" style="display:none">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                        <h2>STANDINGS</h2>
+                        <button class="btn-play" id="simBtn" onclick="simulateSeason()">PLAY 38 MATCHES</button>
+                    </div>
+                    <div id="league-res"></div>
+                </div>
+            </main>
+        </div>
+    </section>
+
+    <div id="profile-modal" class="modal">
+        <div class="modal-content">
+            <h3>SETTINGS</h3>
+            <input type="text" id="edit-name" placeholder="New Name">
+            <input type="text" id="edit-photo" placeholder="Photo URL">
+            <button class="btn-primary" style="width:100%" onclick="saveProfile()">SAVE</button>
+            <button onclick="closeProfile()" style="background:none; border:none; color:white; margin-top:10px; cursor:pointer; width:100%">CANCEL</button>
+        </div>
+    </div>
+
+    <div id="celebration-overlay">
+        <img class="trophy" src="https://cdn-icons-png.flaticon.com/512/3112/3112946.png">
+        <h1 style="color:var(--gold); font-size:4rem; font-family:'Oswald'">CHAMPIONS!</h1>
+        <p id="winner-text" style="font-size:1.2rem"></p>
+        <button class="btn-primary" onclick="nextSeason()">NEXT SEASON</button>
+    </div>
+
+    <script>
+        const config = {
+            leagues: {
+                EPL: ["Man City", "Arsenal", "Liverpool", "Man Utd", "Chelsea", "Spurs", "Newcastle", "Aston Villa", "Everton", "West Ham", "Wolves", "Brighton", "Fulham", "Palace", "Brentford", "Nottingham", "Leicester", "Southampton", "Ipswich", "Bournemouth"],
+                LALIGA: ["Real Madrid", "Barcelona", "Atleti", "Girona", "Sociedad", "Bilbao", "Sevilla", "Valencia", "Villarreal", "Betis", "Celta", "Osasuna", "Getafe", "Mallorca", "Rayo", "Las Palmas", "Alaves", "Valladolid", "Leganes", "Espanyol"],
+                BUNDESLIGA: ["Leverkusen", "Bayern", "Dortmund", "Leipzig", "Stuttgart", "Frankfurt", "Hoffenheim", "Heidenheim", "Werder", "Freiburg", "Augsburg", "Wolfsburg", "Mainz", "Gladbach", "Union", "Bochum", "Schalke", "Hertha", "St Pauli", "Kiel"],
+                SERIEA: ["Inter", "Milan", "Juve", "Atalanta", "Bologna", "Roma", "Lazio", "Fiorentina", "Napoli", "Torino", "Genoa", "Monza", "Verona", "Udinese", "Cagliari", "Lecce", "Empoli", "Parma", "Como", "Venezia"]
+            },
+            names: ["Zidan", "Alex", "Grealish", "Foden", "Muller", "Davies", "Silva", "Rice", "Azam", "Pedri", "Yamal", "Musiala"],
+            last: ["Sterling", "Smith", "Santos", "Walker", "Kimmich", "Sancho", "Guler", "Mainoo"]
+        };
+
+        let game = {
+            mName: "", mAge: 0, budget: 150, team: "", league: [],
+            squad: [], academy: [], market: [], standings: [], currentYear: 2026, isOver: false
+        };
+
+        function playMusic() { const m = document.getElementById('bgMusic'); if(m.paused){ m.volume=0.2; m.play(); } }
+
+        function loadTeams() {
+            game.mName = document.getElementById('mName').value;
+            game.mAge = parseInt(document.getElementById('mAge').value);
+            const lKey = document.getElementById('mLeague').value;
+            if(!game.mName || game.mAge < 37 || game.mAge > 55) return alert("Cek Nama & Usia!");
+            
+            const grid = document.getElementById('team-grid');
+            grid.innerHTML = "";
+            config.leagues[lKey].forEach(t => {
+                grid.innerHTML += `<div class="card"><h3>${t}</h3><button class="btn-primary" onclick="startApp('${t}', '${lKey}')">SELECT</button></div>`;
+            });
+            showScreen('team-screen');
+        }
+
+        function startApp(team, lKey) {
+            game.team = team;
+            game.league = config.leagues[lKey];
+            game.currentYear = 2026;
+            game.budget = 150;
+            game.squad = [];
+            for(let i=0; i<23; i++) game.squad.push({ id: Date.now()+i, name: genName(), ovr: Math.floor(Math.random()*15)+70 });
+            
+            genAcademy();
+            genMarket();
+            resetTable();
+            updateUI();
+            showScreen('main-screen');
+        }
+
+        function genName() { return config.names[Math.floor(Math.random()*config.names.length)] + " " + config.last[Math.floor(Math.random()*config.last.length)]; }
+        
+        function genAcademy() {
+            game.academy = [];
+            for(let i=0; i<4; i++) game.academy.push({ id: Date.now()+i+50, name: genName(), ovr: 65, pot: Math.floor(Math.random()*15)+80 });
+        }
+
+        function genMarket() {
+            game.market = [
+                {name: "Mbappe", price: 180, ovr: 96}, {name: "Haaland", price: 175, ovr: 95},
+                {name: "Bellingham", price: 150, ovr: 94}, {name: "L. Yamal", price: 90, ovr: 89}
+            ];
+        }
+
+        function resetTable() { game.standings = game.league.map(t => ({name: t, pts: 0, w:0, d:0, l:0})); }
+
+        function updateUI() {
+            document.getElementById('header-team').innerText = game.team;
+            document.getElementById('nav-mName').innerText = game.mName.toUpperCase();
+            document.getElementById('budget-val').innerText = `$${game.budget}M`;
+            document.getElementById('welcome-year').innerText = game.currentYear;
+            
+            // Render Squad
+            const sGrid = document.getElementById('squad-grid');
+            sGrid.innerHTML = game.squad.map(p => `<div class="card"><h3>${p.name}</h3><span class="green">OVR: ${p.ovr}</span></div>`).join('');
+
+            // Academy
+            const aGrid = document.getElementById('academy-grid');
+            aGrid.innerHTML = game.academy.map(p => `<div class="card"><h3>${p.name}</h3><small>POT: ${p.pot}</small><br><button class="btn-primary" style="margin-top:10px" onclick="promote(${p.id})">PROMOTE</button></div>`).join('');
+
+            // Market
+            const mGrid = document.getElementById('market-grid');
+            mGrid.innerHTML = game.market.map(p => `<div class="card"><h3>${p.name}</h3><span class="green">$${p.price}M</span><br><button class="btn-primary" onclick="buy('${p.name}', ${p.price}, ${p.ovr})">SIGN</button></div>`).join('');
+
+            renderTable();
+        }
+
+        function promote(id) {
+            const p = game.academy.find(x => x.id === id);
+            game.squad.push({name: p.name, ovr: p.ovr});
+            game.academy = game.academy.filter(x => x.id !== id);
+            updateUI();
+        }
+
+        function buy(name, price, ovr) {
+            if(game.budget < price) return alert("Budget No!");
+            game.budget -= price;
+            game.squad.push({name, ovr});
+            game.market = game.market.filter(x => x.name !== name);
+            updateUI();
+        }
+
+        function simulateSeason() {
+            if(game.isOver) return;
+            game.standings.forEach(t => {
+                t.pts = 0; t.w = 0; t.d = 0; t.l = 0;
+                for(let i=0; i<38; i++) {
+                    let luck = Math.random();
+                    let avgOvr = game.squad.reduce((a,b) => a+b.ovr, 0)/game.squad.length;
+                    if(t.name === game.team) luck += (avgOvr - 75) * 0.03;
+                    if(luck > 0.55) { t.pts += 3; t.w++; }
+                    else if(luck > 0.25) { t.pts += 1; t.d++; }
+                    else { t.l++; }
+                }
+            });
+            game.standings.sort((a,b) => b.pts - a.pts);
+            renderTable();
+            checkResult();
+        }
+
+        function checkResult() {
+            const pos = game.standings.findIndex(t => t.name === game.team) + 1;
+            if(pos >= 18) return endGame(`RELEGATED! You finished ${pos}.`);
+            if(game.currentYear >= 2070) return endGame(`RETIRED! The year is 2070.`);
+            
+            if(pos === 1) {
+                document.getElementById('winner-text').innerText = `Coach ${game.mName} won the league with ${game.team}!`;
+                document.getElementById('celebration-overlay').style.display = "flex";
+            } else {
+                alert(`Season ${game.currentYear} Finished. Rank: ${pos}`);
+                nextSeason();
+            }
+        }
+
+        function nextSeason() {
+            game.currentYear++;
+            game.budget += 60;
+            genAcademy();
+            resetTable();
+            updateUI();
+            document.getElementById('celebration-overlay').style.display = "none";
+            showTab('office');
+        }
+
+        function renderTable() {
+            let html = `<table><tr><th>POS</th><th>CLUB</th><th>W</th><th>D</th><th>L</th><th>PTS</th></tr>`;
+            game.standings.forEach((t, i) => {
+                let p = i+1;
+                let cls = t.name === game.team ? "my-team-row" : "";
+                html += `<tr class="${cls}"><td>${p}</td><td>${t.name}</td><td>${t.w}</td><td>${t.d}</td><td>${t.l}</td><td>${t.pts}</td></tr>`;
+            });
+            document.getElementById('league-res').innerHTML = html + "</table>";
+        }
+
+        function openProfile() { 
+            document.getElementById('profile-modal').style.display = "flex";
+            document.getElementById('edit-name').value = game.mName;
+        }
+        function closeProfile() { document.getElementById('profile-modal').style.display = "none"; }
+        function saveProfile() {
+            game.mName = document.getElementById('edit-name').value;
+            const photo = document.getElementById('edit-photo').value;
+            if(photo) document.getElementById('nav-mPhoto').src = photo;
+            updateUI(); closeProfile();
+        }
+
+        function endGame(msg) {
+            game.isOver = true;
+            document.body.innerHTML = `<div style="height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; background:#000; color:red; font-family:'Oswald'"><h1>GAME OVER</h1><p style="color:white">${msg}</p><button class="btn-primary" onclick="location.reload()">RESTART</button></div>`;
+        }
+
+        function showScreen(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+        function showTab(id) {
+            document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(id + '-tab').style.display = 'block';
+            event.currentTarget.classList.add('active');
+        }
+    </script>
+</body>
+</html>
